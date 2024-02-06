@@ -1,0 +1,17 @@
+{
+    "name": "SketchToDesign",
+    "id": "10574075554744836089",
+    "api": "1.0.0",
+    "editorType": ["figma"],
+    "permissions": [],
+    "containsWidget": true,
+    "main": "dist/code.js",
+    "ui": "dist/ui.html",
+    "widgetApi": "1.0.0",
+    "networkAccess":{
+        "allowedDomains": [
+          "*"
+        ],
+        "reasoning": "We need to access the internet make api calls and load image resources."
+      }
+  }

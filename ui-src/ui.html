@@ -1,0 +1,16 @@
+
+<script>
+  function sendMessageToPlugin(data) {
+    parent.postMessage({ pluginMessage: data }, '*');
+  }
+
+  function listenToPluginMessage(callback) {
+    window.addEventListener('message', function listener(event) {
+      if (event.data.pluginMessage) {
+        callback(event.data.pluginMessage);
+      }
+    });
+  }
+</script>
+<div data-theme="dark" id="react-page" class="bg-base-100"></div>
+

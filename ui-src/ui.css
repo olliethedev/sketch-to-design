@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:slnt,wght@-10..0,100..900&display=swap');
+
+
+#dangerous-reset {
+    all: initial;
+}
+
+#dangerous-reset * {
+    all: unset
+}
+
+.input::placeholder {
+    opacity: 0.4;
+}
+
+.textarea::placeholder {
+    opacity: 0.4;
+}
+  
