@@ -8,6 +8,11 @@
     "strict": true,
     "typeRoots": [
       "../node_modules/@figma"
-    ]
+    ],
+    "moduleResolution": "node",
+    // "baseUrl": ".",
+    // "paths": {
+    //   "html-to-figma-lib/figma": ["./node_modules/html-to-figma-lib/figma"]
+    // },
   }
 }
