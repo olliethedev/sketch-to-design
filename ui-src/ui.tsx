@@ -1,10 +1,19 @@
 import * as React from "react";
+import { useEffect } from "react";
 import * as ReactDOM from "react-dom";
-import { MemoryRouter, Routes, Route, Outlet } from "react-router-dom";
+import {
+  MemoryRouter,
+  Routes,
+  Route,
+  Outlet,
+  useNavigate,
+} from "react-router-dom";
 import "./ui.css";
 import { ErrorBoundary } from "react-error-boundary";
 import { HtmlPreview } from "./componenets/HtmlPreview";
 import { htmlToFigma, setContext } from "html-to-figma-lib/browser";
+import { useWidgetBinding } from "./hooks/useWidgetBinding";
+import { WidgetMessageEvent } from "./types";
 
 const exampleHtml = `
 <!DOCTYPE html>
@@ -79,6 +88,29 @@ const exampleHtml = `
 `;
 
 const Layout = () => {
+  const [message] = useWidgetBinding();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("App mounted");
+    //send message to figma widget to proceed
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "started",
+        },
+      },
+      "*"
+    );
+  }, []);
+
+  useEffect(() => {
+    if (message?.data?.pluginMessage?.type === "navigate") {
+      const { screen } = message.data.pluginMessage.data;
+      navigate(screen);
+    }
+  }, [message]);
+
   return (
     <ErrorBoundary
       fallback={
@@ -93,11 +125,14 @@ const Layout = () => {
 };
 
 export default function App() {
+  
   return (
     <MemoryRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="canvas" element={<Canvas />} />
+          <Route path="preview" element={<Preview />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
@@ -106,6 +141,22 @@ export default function App() {
 }
 
 const Home = () => {
+  return (
+    <div>
+      <span>Waiting for widget to respond...</span>
+    </div>
+  );
+};
+
+const Canvas = () => {
+  return (
+    <div>
+      <h1>Canvas</h1>
+    </div>
+  );
+};
+
+const Preview = () => {
   const [doc, setDocument] = React.useState<HTMLIFrameElement>();
   const setDocumentCallback = React.useCallback(
     (newDoc: HTMLIFrameElement) => {
@@ -116,7 +167,10 @@ const Home = () => {
   const onImport = async (frame: HTMLIFrameElement, useAutoLayout: boolean) => {
     setContext(frame.contentWindow as Window);
 
-    const htmlLayers = await htmlToFigma(frame.contentDocument.body, useAutoLayout);
+    const htmlLayers = await htmlToFigma(
+      frame.contentDocument.body,
+      useAutoLayout
+    );
 
     const inputStr = JSON.stringify({ layers: htmlLayers });
 
@@ -125,10 +179,7 @@ const Home = () => {
   return (
     <div>
       <h1 className="text-4xl font-bold text-center text-blue-600">Home</h1>
-      <HtmlPreview
-      gotElement={setDocumentCallback}
-      html={exampleHtml}
-      />
+      <HtmlPreview gotElement={setDocumentCallback} html={exampleHtml} />
       <button onClick={() => onImport(doc, false)}>Export</button>
     </div>
   );
@@ -140,7 +191,7 @@ const loadJson = async (text: string, useAutoLayout: boolean) => {
     {
       pluginMessage: {
         type: "import",
-        data: {json, useAutoLayout},
+        data: { json, useAutoLayout },
       },
     },
     "*"
@@ -150,5 +201,7 @@ const loadJson = async (text: string, useAutoLayout: boolean) => {
 const NoPage = () => {
   return <h1>404</h1>;
 };
+
+const handleScreenRouting = (message:WidgetMessageEvent) => {};
 
 ReactDOM.render(<App />, document.getElementById("react-page"));
