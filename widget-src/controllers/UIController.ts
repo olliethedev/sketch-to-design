@@ -1,7 +1,10 @@
 export const UIController = (screen: "canvas" | "preview") => {
     return {
         show: () => {
-            figma.showUI(__html__);
+            figma.showUI(__html__, {
+                width: 720,
+                height: 720,
+              });
         },
         handleMessage: (msg: any) => {
             switch (msg.type) {

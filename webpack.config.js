@@ -60,6 +60,9 @@ module.exports = (env, argv) => {
     },
     resolve: {
       extensions: ['.tsx', '.ts', '.jsx', '.js'],
+      alias: {
+        react: path.resolve('./node_modules/react'),
+      },
     },
     output: {
       filename: '[name].js',
@@ -77,20 +80,21 @@ module.exports = (env, argv) => {
       }),
       new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/ui/]),
     ],
-    ...(isProduction && {
-      optimization: {
-        minimize: true,
-        minimizer: [
-          new TerserPlugin({
-            terserOptions: {
-              format: {
-                comments: false,
-              },
+    optimization: {
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            mangle: isProduction? true : false, 
+            compress: isProduction? true : false, 
+            
+            format: {
+              comments: false,
             },
-            extractComments: false, 
-          }),
-        ],
-      },
-    }),
+          },
+          extractComments: false, 
+        }),
+      ],
+    },
   };
 };

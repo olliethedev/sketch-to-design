@@ -61,7 +61,7 @@ function Widget() {
           fill: "#D9D9D9",
         }}
       >
-        <Text>Open UI</Text>
+        <Text>Canvas</Text>
       </AutoLayout>
     </AutoLayout>
   );

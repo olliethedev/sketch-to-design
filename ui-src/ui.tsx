@@ -14,6 +14,7 @@ import { HtmlPreview } from "./componenets/HtmlPreview";
 import { htmlToFigma, setContext } from "html-to-figma-lib/browser";
 import { useWidgetBinding } from "./hooks/useWidgetBinding";
 import { WidgetMessageEvent } from "./types";
+import { Canvas } from "./componenets/Canvas";
 
 const exampleHtml = `
 <!DOCTYPE html>
@@ -148,13 +149,7 @@ const Home = () => {
   );
 };
 
-const Canvas = () => {
-  return (
-    <div>
-      <h1>Canvas</h1>
-    </div>
-  );
-};
+
 
 const Preview = () => {
   const [doc, setDocument] = React.useState<HTMLIFrameElement>();
