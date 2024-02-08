@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { fabric } from "fabric";
 import {
   FabricJSCanvas,
@@ -13,51 +13,75 @@ import {
   IconCursor,
   IconDelete,
   IconDrag,
+  IconFill,
   IconRedo,
-  IconSearch,
   IconShapes,
   IconText,
   IconUndo,
 } from "./Icons";
+import {
+  createCircle,
+  createRectangle,
+  createLine,
+  createText,
+} from "../helpers/shapes";
 import { cn } from "../helpers/utils";
 
-const SIZE = {
+const WINDOW_SIZE = {
   width: 720,
   height: 640,
   borderWidth: 3,
 };
 
+const BRUSH_SIZES = {
+  small: 2,
+  medium: 5,
+  large: 12,
+  extra_large: 20,
+};
+
+const DEFAULTS = {
+  STROKE_COLOR: "#35363a",
+  FILL_COLOR: "#ffffff",
+  BRUSH_SIZE: BRUSH_SIZES.medium,
+  CURSOR_MODE: "draw" as "draw" | "select",
+};
+
 const BUTTON_CLASSES = "btn btn-sm btn-ghost";
+const TOOLTIPT_CLASSES = "tooltip tooltip-bottom tooltip-info max-w-32";
 
 export const Canvas = () => {
-  const { editor, onReady } = useFabricJSEditor();
+  const { editor, onReady } = useFabricJSEditor({
+    defaultFillColor: DEFAULTS.FILL_COLOR,
+    defaultStrokeColor: DEFAULTS.STROKE_COLOR,
+  });
 
   const history = [];
+  const [initialized, setInitialized] = useState(false);
   const [transformingViewport, setTransformingViewport] = useState(false);
-  const [strokeColor, setStrokeColor] = useState("#35363a");
-
-  const [cursorMode, setCursorMode] = useState<"draw" | "select">("draw");
+  const [strokeColor, setStrokeColor] = useState(DEFAULTS.STROKE_COLOR);
+  const [fillColor, setFillColor] = useState(DEFAULTS.FILL_COLOR);
+  const [cursorMode, setCursorMode] = useState<"draw" | "select">(
+    DEFAULTS.CURSOR_MODE
+  );
+  const [brushSize, setBrushSize] = useState(DEFAULTS.BRUSH_SIZE);
 
   // Initialize canvas
   useEffect(() => {
-    if (!editor || !fabric) {
+    if (!editor || !fabric || initialized) {
       return;
     }
-    editor.canvas.setHeight(SIZE.height - SIZE.borderWidth * 2);
-    editor.canvas.setWidth(SIZE.width - SIZE.borderWidth * 2);
-    editor.canvas.backgroundColor = "#ffffff";
-    setObjectStrokeColor("#35363a");
+    editor.canvas.setHeight(WINDOW_SIZE.height - WINDOW_SIZE.borderWidth * 2);
+    editor.canvas.setWidth(WINDOW_SIZE.width - WINDOW_SIZE.borderWidth * 2);
+    editor.canvas.backgroundColor = DEFAULTS.FILL_COLOR;
+    editor.canvas.freeDrawingBrush.width = DEFAULTS.BRUSH_SIZE;
+    editor.canvas.freeDrawingBrush.color = DEFAULTS.STROKE_COLOR;
     editor.canvas.renderAll();
-  }, [editor?.canvas.backgroundImage]);
+    setInitialized(true);
+  }, [editor]);
 
   // Add zoom and pan functionality
   useCanvasZoomAndPan(editor, transformingViewport);
-
-  const toggleSize = () => {
-    editor.canvas.freeDrawingBrush.width === 12
-      ? (editor.canvas.freeDrawingBrush.width = 5)
-      : (editor.canvas.freeDrawingBrush.width = 12);
-  };
 
   // Set brush and stroke color
 
@@ -67,6 +91,13 @@ export const Canvas = () => {
     setStrokeColor(color);
   };
 
+  // Set fill color
+  const setObjectFillColor = (color: string) => {
+    editor.setFillColor(color);
+    setFillColor(color);
+  };
+
+  // Set cursor mode
   useEffect(() => {
     if (!editor || !fabric) {
       return;
@@ -74,15 +105,15 @@ export const Canvas = () => {
     editor.canvas.isDrawingMode = cursorMode === "draw";
   }, [editor, cursorMode]);
 
-  const removeSelectedObject = () => {
-    editor.canvas.remove(editor.canvas.getActiveObject());
-  };
-
+  // Add keyboard shortcuts
   useEffect(() => {
+    if (!editor || !fabric) {
+      return;
+    }
     const handleKeyDown = (event) => {
       // Check if the delete key or backspace key is pressed
       if (event.keyCode === 46 || event.keyCode === 8) {
-        removeSelectedObject();
+        editor.canvas.remove(editor.canvas.getActiveObject());
       }
     };
 
@@ -93,7 +124,12 @@ export const Canvas = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [removeSelectedObject]);
+  }, [editor]);
+
+  const updateBrushSize = (brushSize: number) => {
+    editor.canvas.freeDrawingBrush.width = brushSize;
+    setBrushSize(brushSize);
+  };
 
   const undo = () => {
     if (editor.canvas._objects.length > 0) {
@@ -129,18 +165,32 @@ export const Canvas = () => {
     }
   };
 
-  const onAddLine = () => {
-    editor.addLine();
-  };
-
   const onAddCircle = () => {
-    editor.addCircle();
+    const object = new fabric.Circle({
+      ...createCircle(fillColor, strokeColor),
+    });
+    editor.canvas.add(object);
   };
   const onAddRectangle = () => {
-    editor.addRectangle();
+    const object = new fabric.Rect({
+      ...createRectangle(fillColor, strokeColor),
+    });
+    editor.canvas.add(object);
   };
-  const addText = () => {
-    editor.addText("inset text");
+  const onAddLine = () => {
+    const LINE = createLine(strokeColor);
+    const object = new fabric.Line(LINE.points, {
+      ...LINE.options,
+    });
+    editor.canvas.add(object);
+  };
+  const onAddText = () => {
+    // use stroke in text fill, fill default is most of the time transparent
+    const object = new fabric.Textbox("insert text", {
+      ...createText(strokeColor),
+    });
+    object.set({ text: "insert text" });
+    editor.canvas.add(object);
   };
 
   const exportImage = () => {
@@ -178,59 +228,63 @@ export const Canvas = () => {
           <IconBrush className="h-4 w-4" />
         </ActionButton>
         <ActionDivider />
-        <div className="dropdown dropdown-hover">
-          <label
-            tabIndex={0}
-            className={cn(
-              "btn btn-sm btn-ghost",
-              transformingViewport ? "btn-disabled" : ""
-            )}
-          >
-            <IconShapes className="h-4 w-4" />
-          </label>
-          <ul
-            tabIndex={0}
-            className="dropdown-content menu shadow bg-base-100 rounded w-32"
-          >
-            <li>
-              <a className="btn-sm" onClick={() => onShapeSelect("Line")}>
-                Line
-              </a>
-            </li>
-            <li>
-              <a className="btn-sm" onClick={() => onShapeSelect("Circle")}>
-                Circle
-              </a>
-            </li>
-            <li>
-              <a className="btn-sm" onClick={() => onShapeSelect("Rectangle")}>
-                Rectangle
-              </a>
-            </li>
-          </ul>
-        </div>
+        <ActionDropdown
+          tooltip="Add Shape"
+          disabled={transformingViewport}
+          buttonChildren={<IconShapes className="h-4 w-4" />}
+        >
+          <ActionDropdownItem onClick={() => onShapeSelect("Line")}>
+            Line
+          </ActionDropdownItem>
+          <ActionDropdownItem onClick={() => onShapeSelect("Circle")}>
+            Circle
+          </ActionDropdownItem>
+          <ActionDropdownItem onClick={() => onShapeSelect("Rectangle")}>
+            Rectangle
+          </ActionDropdownItem>
+        </ActionDropdown>
+
         <ActionButton
-          onClick={addText}
+          onClick={onAddText}
           tooltip="Add Text"
           disabled={transformingViewport}
         >
           <IconText className="h-4 w-4" />
         </ActionButton>
         <ActionDivider />
-        {/* todo: make this a dropdown */}
-        <ActionButton
-          onClick={toggleSize}
-          disabled={transformingViewport}
+        <ActionDropdown
           tooltip="Brush Size"
+          disabled={transformingViewport}
+          buttonChildren={<IconBrushFancy className="h-4 w-4" />}
         >
-          <IconBrushFancy className="h-4 w-4" />
-        </ActionButton>
+          {Object.keys(BRUSH_SIZES).map((key) => (
+            <ActionDropdownItem
+              key={key}
+              onClick={() => updateBrushSize(BRUSH_SIZES[key])}
+              selected={brushSize === BRUSH_SIZES[key]}
+            >
+              <div
+                className={`w-full rounded-full bg-gray-400 capitalize`}
+                style={{ height: `${BRUSH_SIZES[key]}px` }}
+              />
+            </ActionDropdownItem>
+          ))}
+        </ActionDropdown>
         <ActionColorPicker
           onClick={(color) => setObjectStrokeColor(color)}
+          value={strokeColor}
           disabled={transformingViewport}
-          tooltip="Color Picker"
+          tooltip="Stroke Color"
         >
           <IconColorPalette className="h-4 w-4" />
+        </ActionColorPicker>
+        <ActionColorPicker
+          onClick={(color) => setObjectFillColor(color)}
+          value={fillColor}
+          disabled={transformingViewport}
+          tooltip="Fill Color"
+        >
+          <IconFill className="h-5 w-5" />
         </ActionColorPicker>
 
         <ActionDivider />
@@ -270,11 +324,11 @@ export const Canvas = () => {
 
       <div
         style={{
-          border: `${SIZE.borderWidth}px ${
+          border: `${WINDOW_SIZE.borderWidth}px ${
             transformingViewport ? "dotted" : "solid"
           } Green`,
-          width: `${SIZE.width}px`,
-          height: `${SIZE.height}px`,
+          width: `${WINDOW_SIZE.width}px`,
+          height: `${WINDOW_SIZE.height}px`,
         }}
       >
         <FabricJSCanvas className="sample-canvas" onReady={onReady} />
@@ -364,7 +418,7 @@ const ActionButton = ({
   disabled,
 }: ActionButtonProps) => {
   return (
-    <div className="tooltip tooltip-bottom tooltip-info" data-tip={tooltip}>
+    <div className={TOOLTIPT_CLASSES} data-tip={tooltip}>
       <button
         className={cn(BUTTON_CLASSES, selected && "btn-active")}
         onClick={onClick}
@@ -377,17 +431,19 @@ const ActionButton = ({
 };
 
 const ActionColorPicker = ({
+  value,
   children,
   tooltip,
   selected,
   disabled,
   onClick,
 }: Omit<ActionButtonProps, "onClick"> & {
+  value: string;
   onClick: (color: string) => void;
 }) => {
   const id = useId();
   return (
-    <div className="tooltip tooltip-bottom tooltip-info" data-tip={tooltip}>
+    <div className={TOOLTIPT_CLASSES} data-tip={tooltip}>
       <label
         htmlFor={id}
         className={cn(
@@ -401,14 +457,64 @@ const ActionColorPicker = ({
       </label>
       <input
         type="color"
-        className="hidden"
+        className="absolute left-0 top-0 w-full cursor-pointer opacity-0"
         id={id}
-        value="#2563eb"
+        value={value}
         title="Choose your color"
         onChange={(e) => onClick(e.target.value)}
         disabled={disabled}
       />
     </div>
+  );
+};
+
+const ActionDropdown = ({
+  tooltip,
+  selected,
+  disabled,
+  children,
+  buttonChildren,
+}: Omit<ActionButtonProps, "onClick"> & {
+  buttonChildren: React.ReactNode;
+}) => {
+  return (
+    <div className="dropdown dropdown-hover">
+      <label
+        tabIndex={0}
+        className={cn(
+          "btn btn-sm btn-ghost",
+          disabled && "btn-disabled",
+          selected && "btn-active"
+        )}
+        data-tip={tooltip}
+      >
+        {buttonChildren}
+      </label>
+      <ul
+        tabIndex={0}
+        className="dropdown-content menu shadow bg-base-100 rounded w-32"
+      >
+        {children}
+      </ul>
+    </div>
+  );
+};
+
+const ActionDropdownItem = ({
+  onClick,
+  children,
+  selected,
+}: {
+  onClick: () => void;
+  children: React.ReactNode;
+  selected?: boolean;
+}) => {
+  return (
+    <li>
+      <a className={cn("btn-sm", selected && "btn-active")} onClick={onClick}>
+        {children}
+      </a>
+    </li>
   );
 };
 

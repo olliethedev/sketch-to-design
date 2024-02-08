@@ -93,7 +93,7 @@ const Layout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("App mounted");
+    console.log("UI mounted");
     //send message to figma widget to proceed
     parent.postMessage(
       {
