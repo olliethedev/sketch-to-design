@@ -98,3 +98,22 @@ export const Logo = () => {
             </svg>
     `;
 }
+
+export const Close = () => {
+    return `
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M12 10.586L5.707 4.293L4.293 5.707L10.586 12L4.293 18.293L5.707 19.707L12 13.414L18.293 19.707L19.707 18.293L13.414 12L19.707 5.707L18.293 4.293L12 10.586Z"
+                fill="black"
+            />
+        </svg>
+    `;
+}

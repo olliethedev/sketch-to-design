@@ -26,6 +26,7 @@ import {
   createText,
 } from "../helpers/shapes";
 import { cn } from "../helpers/utils";
+import { messageOnImportImage } from "../helpers/widget-helper";
 
 const WINDOW_SIZE = {
   width: 720,
@@ -196,6 +197,7 @@ export const Canvas = () => {
   const exportImage = () => {
     const data = editor.canvas.toDataURL();
     console.log(data);
+    messageOnImportImage(data);
   };
 
   return (
