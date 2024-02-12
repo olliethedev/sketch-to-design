@@ -1,0 +1,1 @@
+export const API_KEY_STORAGE_KEY = "API_KEY_STORAGE_KEY";
