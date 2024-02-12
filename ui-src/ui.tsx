@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useEffect } from "react";
 import * as ReactDOM from "react-dom";
-import { useLocation } from "react-router-dom";
 import {
   MemoryRouter,
   Routes,
@@ -11,12 +10,11 @@ import {
 } from "react-router-dom";
 import "./ui.css";
 import { ErrorBoundary } from "react-error-boundary";
-import { HtmlPreview } from "./componenets/HtmlPreview";
-import { htmlToFigma, setContext } from "html-to-figma-lib/browser";
+
+import { messageOnStart } from "./helpers/widget-helper";
 import { useWidgetBinding } from "./hooks/useWidgetBinding";
-import { WidgetMessageEvent } from "./types";
 import { Canvas } from "./componenets/Canvas";
-import { messageOnImportFrames, messageOnStart } from "./helpers/widget-helper";
+import { Preview } from "./componenets/Preview";
 
 
 
@@ -78,45 +76,7 @@ const Home = () => {
   );
 };
 
-const Preview = () => {
-  const [doc, setDocument] = React.useState<HTMLIFrameElement>();
-  const location = useLocation();
 
-  const queryParams = new URLSearchParams(location.search);
-  console.log({queryParams});
-   const htmlParam = queryParams.get('html');
-   console.log({htmlParam});
-  const setDocumentCallback = React.useCallback(
-    (newDoc: HTMLIFrameElement) => {
-      if (newDoc !== doc) setDocument(newDoc);
-    },
-    [doc]
-  );
-  const onImport = async (frame: HTMLIFrameElement, useAutoLayout: boolean) => {
-    setContext(frame.contentWindow as Window);
-
-    const htmlLayers = await htmlToFigma(
-      frame.contentDocument.body,
-      useAutoLayout
-    );
-
-    const inputStr = JSON.stringify({ layers: htmlLayers });
-
-    loadJson(inputStr, useAutoLayout);
-  };
-  return (
-    <div>
-      <h1 className="text-4xl font-bold text-center text-blue-600">Home</h1>
-      <HtmlPreview gotElement={setDocumentCallback} html={htmlParam} />
-      <button onClick={() => onImport(doc, false)}>Export</button>
-    </div>
-  );
-};
-
-const loadJson = async (text: string, useAutoLayout: boolean) => {
-  const json = JSON.parse(text);
-  messageOnImportFrames({json, useAutoLayout});
-};
 
 const NoPage = () => {
   return <h1>404</h1>;

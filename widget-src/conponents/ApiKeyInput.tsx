@@ -31,7 +31,6 @@ export const ApiKeyInput = ({ onApiKeyChange }: ApiKeyInputProps) => {
         onTextEditEnd={(e) => setText(e.characters)}
         value={text}
       />
-      {/* figma widget button for saving */}
       <AutoLayout
         fill="#fff"
         height={30}
@@ -43,7 +42,7 @@ export const ApiKeyInput = ({ onApiKeyChange }: ApiKeyInputProps) => {
         padding={4}
         onClick={() => saveApiKey(text)}
       >
-        <SVG width={10} height={10} src={Save()} />
+        <SVG width={14} height={14} src={Save()} />
         <Text
           fill="#000"
           fontSize={12}

@@ -4,7 +4,7 @@ interface HtmlPreviewProps {
   html: string;
   gotElement: (frame: HTMLIFrameElement) => void;
 }
-export const HtmlPreview = ({ html, gotElement }: HtmlPreviewProps) => {
+export const HtmlIFrame = ({ html, gotElement }: HtmlPreviewProps) => {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
   const handleIFrameLoad = React.useCallback(async () => {
@@ -28,7 +28,6 @@ export const HtmlPreview = ({ html, gotElement }: HtmlPreviewProps) => {
 
   return (
     <div>
-      HtmlPreview:
       <iframe
         srcDoc={html}
         ref={iframeRef}
