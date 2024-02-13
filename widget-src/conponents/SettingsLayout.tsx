@@ -16,7 +16,7 @@ export const SettingsLayout = ({setRoute}:ChildRouteProps) => {
 
   useEffect(() => {
     const key = figma.root.getPluginData(API_KEY_STORAGE_KEY);
-    if (key) {
+    if (key!==apiKey) {
       setApiKey(key);
     }
   });
@@ -24,6 +24,7 @@ export const SettingsLayout = ({setRoute}:ChildRouteProps) => {
   const onSaveApiKey = (apiKey: string) => {
     figma.root.setPluginData(API_KEY_STORAGE_KEY, apiKey);
     setApiKey(apiKey);
+    setRoute("home");
   };
   return (
     <AutoLayout

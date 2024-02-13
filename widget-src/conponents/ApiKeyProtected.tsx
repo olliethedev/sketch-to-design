@@ -15,7 +15,7 @@ export const ApiKeyProtected = ({ children }: ApiKeyProtectedProps) => {
   );
   useEffect(() => {
     const key = figma.root.getPluginData(API_KEY_STORAGE_KEY);
-    if (key) {
+    if (apiKey !== key) {
       setApiKey(key);
     }
   });
@@ -24,6 +24,7 @@ export const ApiKeyProtected = ({ children }: ApiKeyProtectedProps) => {
     figma.root.setPluginData(API_KEY_STORAGE_KEY, apiKey);
     setApiKey(apiKey);
   };
+
   return (
     <AutoLayout
       direction="horizontal"

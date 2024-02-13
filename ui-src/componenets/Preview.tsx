@@ -3,8 +3,17 @@ import { useLocation } from "react-router-dom";
 import { HtmlIFrame } from "./HTMLIFrame";
 import { htmlToFigma, setContext } from "html-to-figma-lib/browser";
 import { messageOnImportFrames } from "../helpers/widget-helper";
+import { ViewPortPickerLayout } from "./ViewPortPickerLayout";
+import { SCREEN_SIZES } from "../helpers/html-helper";
 export const Preview = () => {
   const [doc, setDocument] = React.useState<HTMLIFrameElement>();
+  const [selectedViewPort, setSelectedViewPort] =
+    React.useState<keyof typeof SCREEN_SIZES>("lg");
+
+  const onPortSelectionChange = (size: keyof typeof SCREEN_SIZES) => {
+    setSelectedViewPort(size);
+  };
+
   const location = useLocation();
 
   const queryParams = new URLSearchParams(location.search);
@@ -29,19 +38,30 @@ export const Preview = () => {
 
     loadJson(inputStr, useAutoLayout);
   };
-  // todo: add viewport picker
+
   return (
     <div>
       <div className="flex flex-wrap items-center space-x-1">
+        <ViewPortPickerLayout selected={selectedViewPort} onChange={onPortSelectionChange} />
+        <div className="border-r border-base-content h-8 mx-2" />
         <button
           className="btn btn-xs btn-success"
           onClick={() => onImport(doc, false)}
         >
-          Export
+          Export as Frames
+        </button>
+        <button
+          className="btn btn-xs btn-success"
+          onClick={() => onImport(doc, true)}
+        >
+          Export as Auto-Layouts <span className="text-xs text-orange-600">(beta)</span>
         </button>
       </div>
-
-      <HtmlIFrame gotElement={setDocumentCallback} html={htmlParam} />
+      <HtmlIFrame
+        viewport={selectedViewPort}
+        gotElement={setDocumentCallback}
+        html={htmlParam}
+      />
     </div>
   );
 };

@@ -5,14 +5,13 @@ import { handleUIImport } from "../helpers/LayersHelper";
 import { ApiKeyProtected } from "../conponents/ApiKeyProtected";
 import { API_KEY_STORAGE_KEY } from "../helpers/Constants";
 import { ChildRouteProps } from "./LayoutRouter";
+import { Button } from "./Button";
 const { widget } = figma;
-const { AutoLayout, SVG, Text, useSyncedState } = widget;
+const { AutoLayout, SVG, Text, useSyncedState, Image } = widget;
 
-export const  HomeLayout = ({setRoute}:ChildRouteProps) => {
+export const HomeLayout = ({ setRoute }: ChildRouteProps) => {
   const [generating, setGenerating] = useSyncedState("generating", false);
   const [image, setImage] = useSyncedState<string | boolean>("image", false);
-
-  
 
   const openCanvas = async () => {
     await new Promise((resolve) => {
@@ -24,42 +23,6 @@ export const  HomeLayout = ({setRoute}:ChildRouteProps) => {
       });
       uiController.show();
     });
-  };
-
-  const openPreview = async (html: string) => {
-    await new Promise((resolve) => {
-      const uiConstroller = UIController({
-        screen: "preview",
-        screenParams: {
-          html,
-        },
-        onImportUI(data) {
-          setImage(false);
-          handleUIImport(data);
-        },
-      });
-      uiConstroller.show();
-    });
-  };
-
-  const generate = async () => {
-    const base64 = image as string;
-    if (!generating) {
-      setGenerating(true);
-
-      const json = await generateHtml({
-        apiKey: figma.root.getPluginData(API_KEY_STORAGE_KEY),
-        image: base64,
-      });
-
-      //todo handle error
-      const message = json.choices[0].message.content;
-      const start = message.indexOf("<!DOCTYPE html>");
-      const end = message.indexOf("</html>");
-      let html = message.slice(start, end + "</html>".length);
-      setGenerating(false);
-      await openPreview(html);
-    }
   };
 
   return (
@@ -83,50 +46,98 @@ export const  HomeLayout = ({setRoute}:ChildRouteProps) => {
         }}
       >
         <SVG src={Logo()} cornerRadius={100} width={64} height={64} />
-        {!generating && (
-          <AutoLayout
-            verticalAlignItems="center"
-            height="hug-contents"
-            padding={{ left: 24, right: 24, top: 12, bottom: 12 }}
-            fill="#E6E6E6"
-            cornerRadius={8}
-            onClick={openCanvas}
-            hoverStyle={{
-              fill: "#D9D9D9",
-            }}
-          >
-            <Text>Draw</Text>
-          </AutoLayout>
-        )}
-        {image && !generating && (
-          <AutoLayout
-            verticalAlignItems="center"
-            height="hug-contents"
-            padding={{ left: 24, right: 24, top: 12, bottom: 12 }}
-            fill="#E6E6E6"
-            cornerRadius={8}
-            onClick={generate}
-            hoverStyle={{
-              fill: "#D9D9D9",
-            }}
-          >
-            <Text>Generate</Text>
-          </AutoLayout>
-        )}
-        {generating && (
-          <AutoLayout verticalAlignItems="center" spacing={8}>
-            <Text>Generating Design...</Text>
-            <SVG
-              src={Close()}
-              width={16}
-              height={16}
-              onClick={() => {
-                setGenerating(false);
-              }}
-            />
-          </AutoLayout>
+        {!image && <Button text="Sketch" onClick={openCanvas} />}
+        {image && (
+          <GenerateLayout
+            image={image}
+            setImage={setImage}
+            generating={generating}
+            setGenerating={setGenerating}
+          />
         )}
       </AutoLayout>
     </ApiKeyProtected>
   );
+};
+
+interface GenerateLayoutProps {
+  image: string | boolean;
+  setImage: (image: string | boolean) => void;
+  generating: boolean;
+  setGenerating: (generating: boolean) => void;
 }
+
+const GenerateLayout = ({
+  image,
+  setImage,
+  generating,
+  setGenerating,
+}: GenerateLayoutProps) => {
+  const openPreview = async (html: string) => {
+    await new Promise((resolve) => {
+      const uiConstroller = UIController({
+        screen: "preview",
+        screenParams: {
+          html,
+        },
+        onImportUI(data) {
+          setImage(false);
+          handleUIImport(data);
+          figma.notify("Design generated successfully");
+        },
+      });
+      uiConstroller.show();
+    });
+  };
+
+  const generate = async () => {
+    const base64 = image as string;
+    if (!generating) {
+      setGenerating(true);
+
+      const json = await generateHtml({
+        apiKey: figma.root.getPluginData(API_KEY_STORAGE_KEY),
+        image: base64,
+      });
+
+      //todo handle error
+      const message = json.choices[0].message.content;
+      const start = message.indexOf("<!DOCTYPE html>");
+      const end = message.indexOf("</html>");
+      let html = message.slice(start, end + "</html>".length);
+      setGenerating(false);
+      setImage(false);
+      await openPreview(html);
+    }
+  };
+
+  const cancelGeneration = () => {
+    setGenerating(false);
+    setImage(false);
+  };
+
+  return (
+    <>
+      {image && !generating && (
+        <AutoLayout direction="horizontal" width="hug-contents" verticalAlignItems="center" spacing={6}>
+          <Image src={image as string} width={64} height={64} />
+          <Button text="Generate" onClick={generate} />
+          <Button text="Cancel" onClick={cancelGeneration} />
+        </AutoLayout>
+      )}
+      {generating && (
+        <AutoLayout verticalAlignItems="center" spacing={8}>
+          <Text>Generating Design...</Text>
+          <SVG
+            src={Close()}
+            width={16}
+            height={16}
+            onClick={() => {
+              cancelGeneration();
+            }}
+          />
+        </AutoLayout>
+      )}
+    </>
+  );
+};

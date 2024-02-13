@@ -28,7 +28,6 @@ export const UIController = (params: UIControllerParams) => {
             case "importUI": {
                 const { data } = msg;
                 onImportUI?.(data);
-                figma.closePlugin();
                 break;
             }
         }

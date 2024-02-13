@@ -1,3 +1,4 @@
+import { Button } from "./Button";
 import { Save } from "./Icons";
 
 const { widget } = figma;
@@ -11,6 +12,7 @@ export const ApiKeyInput = ({ onApiKeyChange }: ApiKeyInputProps) => {
   const [text, setText] = useSyncedState<string>("text", "");
 
   const saveApiKey = (apiKey: string) => {
+    //todo: validate key
     onApiKeyChange(apiKey);
   };
   return (
@@ -31,27 +33,7 @@ export const ApiKeyInput = ({ onApiKeyChange }: ApiKeyInputProps) => {
         onTextEditEnd={(e) => setText(e.characters)}
         value={text}
       />
-      <AutoLayout
-        fill="#fff"
-        height={30}
-        width="hug-contents"
-        direction="horizontal"
-        verticalAlignItems="center"
-        spacing={2}
-        cornerRadius={8}
-        padding={4}
-        onClick={() => saveApiKey(text)}
-      >
-        <SVG width={14} height={14} src={Save()} />
-        <Text
-          fill="#000"
-          fontSize={12}
-          horizontalAlignText="center"
-          verticalAlignText="center"
-        >
-          Save
-        </Text>
-      </AutoLayout>
+      <Button text="Save" icon={Save()} onClick={() => saveApiKey(text)} />
     </AutoLayout>
   );
 };

@@ -17,19 +17,20 @@ export const LayoutRouter = ({ initialRoute }: LayoutRouterProps) => {
     "currentRoute",
     initialRoute
   );
-  const propertyMenu: WidgetPropertyMenuItem[] = [
-    ...(currentRoute === "home" ? [{
-        tooltip: "Settings",
-        propertyName: "settings",
-        itemType: "action" as const,
-      }] : []),
-      ...(currentRoute === "settings" ? [{
-        tooltip: "Cancel",
-        propertyName: "cancel",
-        itemType: "action" as const,
-      }] : []),
-    
-  ];
+  let propertyMenu: WidgetPropertyMenuItem[] = [];
+  if (currentRoute === "home") {
+    propertyMenu.push({
+      tooltip: "Settings",
+      propertyName: "settings",
+      itemType: "action",
+    });
+  } else if (currentRoute === "settings") {
+    propertyMenu.push({
+      tooltip: "Cancel",
+      propertyName: "cancel",
+      itemType: "action",
+    });
+  }
 
   usePropertyMenu(propertyMenu, ({ propertyName }) => {
     if (propertyName === "settings") {
