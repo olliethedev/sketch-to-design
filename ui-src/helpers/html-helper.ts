@@ -127,7 +127,6 @@ export async function fetchSvgContent(iconName: string, style: string): Promise<
         return response.text();
     } catch (error) {
         console.warn(`SVG file not found for ${ iconName }, using default SVG.`);
-        // Provide a path to a default SVG file here
         const defaultSvgPath = "https://www.texttodesign.ai/svgs/regular/image.svg";
         const defaultResponse = await fetch(`https://qib2z7fbh6.execute-api.us-east-1.amazonaws.com/prod/proxy?url=${ encodeURIComponent(defaultSvgPath) }`);
         if (!defaultResponse.ok) throw new Error("Default SVG file not found.");

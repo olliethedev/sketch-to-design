@@ -2,6 +2,11 @@
 
 Sketch To Design is a Figma AI widget that seamlessly converts your doodles into beautiful Figma designs. This widget leverages the power of AI to interpret sketches and translate them into high-fidelity design components, making it an invaluable tool for designers looking to streamline their workflow.
 
+Inspired by the following projects:
+- [screenshot-to-code](https://github.com/abi/screenshot-to-code)
+- [draw-a-ui](https://github.com/SawyerHood/draw-a-ui)
+- [build-it-figma-ai](https://github.com/jordansinger/build-it-figma-ai)
+
 ## Features
 
 - **AI-Powered Design Translation**: Automatically converts sketches into design components.
@@ -18,14 +23,22 @@ To get started with Sketch-to-Design, follow these steps:
 
 ## Development
 
-This project is set up with a React frontend for the UI and a Figma widget backend. Tailwind CSS is used for styling, and Webpack for bundling the project.
+This project is set up with a React for the iFrame UI and a Figma widget/plugin API for the widget. Tailwind CSS is used for styling in the iFrame, and Webpack for bundling the project.
 
-- **UI Development**: Navigate to `ui-src` for UI development. Use `npm run build` to compile your changes.
-- **Widget Development**: Widget code is located in `widget-src`. Make sure to rebuild the project after making changes to see them reflected in Figma.
+| dir / path               | description                          |
+| ------------------------ | ------------------------------------ |
+| ui-src/                  | This is where the iframe code lives  |
+| ui-src/index.html        | Main entry point for the iframe code |
+| ui-src/tsconfig.json     | tsconfig for the iframe code         |
+| widget-src/              | This is where the widget code lives  |
+| widget-src/code.tsx      | Main entry point for the widget code |
+| widget-src/tsconfig.json | tsconfig for the widget code         |
+| dist/                    | Built output goes here               |
 
 ## Dependencies
 
 - React & React DOM
+- html-to-figma-lib
 - DaisyUI
 - Tailwind CSS
 - Webpack
@@ -34,9 +47,11 @@ This project is set up with a React frontend for the UI and a Figma widget backe
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+## Contributing
+
+Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting pull requests.
 
 ## License
 
-This project is licensed under the MIT License - see the `LICENSE` file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
 

@@ -23,9 +23,11 @@ When responding, return ONLY the full code in <html></html> tags or bad things w
 export async function generateHtml({
     apiKey,
     image,
+    instruction = "Create this. Make it look as beautiful as possible.",
   }: {
     image: string;
     apiKey: string;
+    instruction?: string;
   }): Promise<any> {
     const body: GPT4VCompletionRequest = {
       model: "gpt-4-vision-preview",
@@ -48,7 +50,7 @@ export async function generateHtml({
             },
             {
               type: "text",
-              text: "Create this. Make it look as beautiful as possible.",
+              text: instruction,
             },
           ],
         },
