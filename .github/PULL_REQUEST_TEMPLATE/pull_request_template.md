@@ -15,8 +15,8 @@ Please include a summary of the change and which issue is fixed. Please also inc
 
 Please select options that are relevant.
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Bug fix (change which fixes an issue)
+- [ ] New feature (change which adds functionality)
 
 ## How Has This Been Tested?
 

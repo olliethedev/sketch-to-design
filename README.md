@@ -2,6 +2,8 @@
 
 Sketch To Design is a Figma AI widget that seamlessly converts your doodles into beautiful Figma designs. This widget leverages the power of AI to interpret sketches and translate them into high-fidelity design components, making it an invaluable tool for designers looking to streamline their workflow.
 
+![Sketch-to-Design](example.jpeg)
+
 Inspired by the following projects:
 - [screenshot-to-code](https://github.com/abi/screenshot-to-code)
 - [draw-a-ui](https://github.com/SawyerHood/draw-a-ui)

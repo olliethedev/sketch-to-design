@@ -7,7 +7,7 @@ import { API_KEY_STORAGE_KEY } from "../helpers/Constants";
 import { ChildRouteProps } from "./LayoutRouter";
 import { Button } from "./Button";
 const { widget } = figma;
-const { AutoLayout, SVG, Text, useSyncedState, Image } = widget;
+const { AutoLayout, SVG, Text, useSyncedState, Image, Input } = widget;
 
 export const HomeLayout = ({ setRoute }: ChildRouteProps) => {
   const [generating, setGenerating] = useSyncedState("generating", false);
@@ -29,7 +29,7 @@ export const HomeLayout = ({ setRoute }: ChildRouteProps) => {
     <ApiKeyProtected>
       <AutoLayout
         verticalAlignItems="center"
-        padding={{ left: 0, right: 8, top: 0, bottom: 0 }}
+        padding={{ left: 0, right: 10, top: 0, bottom: 0 }}
         fill="#FFFFFF"
         cornerRadius={8}
         spacing={12}
@@ -45,7 +45,7 @@ export const HomeLayout = ({ setRoute }: ChildRouteProps) => {
           spread: 2,
         }}
       >
-        <SVG src={Logo()} cornerRadius={100} width={64} height={64} />
+        <SVG src={Logo()} cornerRadius={100} width={96} height={96} />
         {!image && <Button text="Sketch" onClick={openCanvas} />}
         {image && (
           <GenerateLayout
@@ -73,6 +73,12 @@ const GenerateLayout = ({
   generating,
   setGenerating,
 }: GenerateLayoutProps) => {
+  const DEFAULT_INSTRUCTION =
+    "Create this. Make it look as beautiful as possible.";
+  const [instruction, setInstruction] = useSyncedState<string>(
+    "instruction",
+    DEFAULT_INSTRUCTION
+  );
   const openPreview = async (html: string) => {
     await new Promise((resolve) => {
       const uiConstroller = UIController({
@@ -98,6 +104,7 @@ const GenerateLayout = ({
       const json = await generateHtml({
         apiKey: figma.root.getPluginData(API_KEY_STORAGE_KEY),
         image: base64,
+        instruction,
       });
 
       //todo handle error
@@ -105,6 +112,8 @@ const GenerateLayout = ({
       const start = message.indexOf("<!DOCTYPE html>");
       const end = message.indexOf("</html>");
       let html = message.slice(start, end + "</html>".length);
+
+      setInstruction(DEFAULT_INSTRUCTION);
       setGenerating(false);
       setImage(false);
       await openPreview(html);
@@ -119,10 +128,41 @@ const GenerateLayout = ({
   return (
     <>
       {image && !generating && (
-        <AutoLayout direction="horizontal" width="hug-contents" verticalAlignItems="center" spacing={6}>
-          <Image src={image as string} width={64} height={64} />
-          <Button text="Generate" onClick={generate} />
-          <Button text="Cancel" onClick={cancelGeneration} />
+        <AutoLayout
+          direction="horizontal"
+          width="hug-contents"
+          verticalAlignItems="center"
+          padding={{ left: 0, right: 0, top: 2, bottom: 2 }}
+          spacing={6}
+        >
+          <Image src={image as string} width={80} height={80} />
+          <AutoLayout height="hug-contents" direction="vertical" spacing={3}>
+            <Input
+              fill="#000"
+              fontSize={12}
+              height="hug-contents"
+              width="fill-parent"
+              horizontalAlignText="left"
+              inputBehavior="multiline"
+              inputFrameProps={{
+                fill: "#FFFFFF",
+                horizontalAlignItems: "center",
+                padding: 8,
+                verticalAlignItems: "center",
+              }}
+              onTextEditEnd={(e) => setInstruction(e.characters)}
+              value={instruction}
+            />
+            <AutoLayout
+              height="hug-contents"
+              width="hug-contents"
+              direction="horizontal"
+              spacing={6}
+            >
+              <Button text="Generate" onClick={generate} />
+              <Button text="Cancel" onClick={cancelGeneration} />
+            </AutoLayout>
+          </AutoLayout>
         </AutoLayout>
       )}
       {generating && (

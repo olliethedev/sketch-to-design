@@ -2,7 +2,7 @@ import { API_KEY_STORAGE_KEY } from "../helpers/Constants";
 import { ApiKeyInput } from "./ApiKeyInput";
 
 const { widget } = figma;
-const { AutoLayout, SVG, Text, useSyncedState, useEffect, Input } = widget;
+const { AutoLayout, Text, useSyncedState, useEffect } = widget;
 
 interface ApiKeyProtectedProps {
   children: JSX.ElementChildrenAttribute;

@@ -13,6 +13,7 @@ import {
   IconCursor,
   IconDelete,
   IconDrag,
+  IconFigma,
   IconFill,
   IconRedo,
   IconShapes,
@@ -27,6 +28,8 @@ import {
 } from "../helpers/shapes";
 import { cn } from "../helpers/utils";
 import { messageOnImportImage } from "../helpers/widget-helper";
+import { useModal } from "../hooks/useModal";
+import { FigmaNodeSelector } from "./FigmaNodeSelector";
 
 const WINDOW_SIZE = {
   width: 720,
@@ -66,6 +69,12 @@ export const Canvas = () => {
     DEFAULTS.CURSOR_MODE
   );
   const [brushSize, setBrushSize] = useState(DEFAULTS.BRUSH_SIZE);
+
+  const {
+    Modal: FigmaNodeSelectionModal,
+    toggleModal: toggleFigmaNodeSelectionModal,
+    isModalOpen: isFigmaNodeSelectionModalOpen,
+  } = useModal();
 
   // Initialize canvas
   useEffect(() => {
@@ -200,6 +209,26 @@ export const Canvas = () => {
     messageOnImportImage(data);
   };
 
+  const onNodeSelection = (image: string) => {
+    fabric.Image.fromURL(image, (img) => {
+      var imgAspectRatio = img.width / img.height;
+      var canvasAspectRatio = editor.canvas.width / editor.canvas.height;
+      var scaleToFit =
+        imgAspectRatio > canvasAspectRatio
+          ? editor.canvas.width / img.width
+          : editor.canvas.height / img.height;
+      img.set({
+        scaleX: scaleToFit,
+        scaleY: scaleToFit,
+        left: 0,
+        top: 0,
+      });
+      img.center();
+      editor.canvas.add(img);
+      editor.canvas.renderAll();
+    });
+  };
+
   return (
     <div>
       <div className="flex flex-wrap items-center space-x-1">
@@ -253,6 +282,13 @@ export const Canvas = () => {
         >
           <IconText className="h-4 w-4" />
         </ActionButton>
+
+        <ActionButton
+          onClick={toggleFigmaNodeSelectionModal}
+          tooltip="Add Figma Element"
+          disabled={transformingViewport}>
+            <IconFigma className="h-4 w-4" />
+          </ActionButton>
         <ActionDivider />
         <ActionDropdown
           tooltip="Brush Size"
@@ -335,6 +371,17 @@ export const Canvas = () => {
       >
         <FabricJSCanvas className="sample-canvas" onReady={onReady} />
       </div>
+
+      {isFigmaNodeSelectionModalOpen && (
+        <FigmaNodeSelectionModal title="Select a Figma Element">
+          <FigmaNodeSelector
+            onSelectionConfirmed={(image) => {
+              onNodeSelection(image);
+              toggleFigmaNodeSelectionModal();
+            }}
+          />
+        </FigmaNodeSelectionModal>
+      )}
     </div>
   );
 };

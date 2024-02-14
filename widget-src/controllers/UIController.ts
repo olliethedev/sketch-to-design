@@ -30,6 +30,10 @@ export const UIController = (params: UIControllerParams) => {
                 onImportUI?.(data);
                 break;
             }
+            case "getSelection": {
+                postSelection();
+                break;
+            }
         }
 
     }
@@ -42,7 +46,34 @@ export const UIController = (params: UIControllerParams) => {
             figma.ui.on("message", (msg) => {
                 handleMessage(msg);
             });
+            figma.on("selectionchange", async () => {
+                postSelection();
+            });
         },
 
     };
+};
+
+const postSelection = async () => {
+    const selection = figma.currentPage.selection;
+
+    if (selection.length > 0) {
+        await sleep(1);
+        const node = selection[0];
+
+        node.exportAsync({ format: "PNG" }).then(data => {
+
+            figma.ui.postMessage({
+                type: "selectionChange",
+                data: data
+            });
+
+        }).catch(err => {
+            console.error("Error exporting image:", err);
+        });
+    }
+};
+
+const sleep = (ms: number) => {
+    return new Promise((r) => setTimeout(r, ms));
 };

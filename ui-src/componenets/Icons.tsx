@@ -303,11 +303,83 @@ export function IconDesktop({
   className,
   ...props
 }: React.ComponentProps<"svg">) {
-  return ( 
-    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-    className={cn("h-4 w-4", className)} 
-    viewBox="0 0 576 512"
-    {...props}>
-      <path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z"/></svg>
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      className={cn("h-4 w-4", className)}
+      viewBox="0 0 576 512"
+      {...props}
+    >
+      <path d="M528 0H48C21.5 0 0 21.5 0 48v320c0 26.5 21.5 48 48 48h192l-16 48h-72c-13.3 0-24 10.7-24 24s10.7 24 24 24h272c13.3 0 24-10.7 24-24s-10.7-24-24-24h-72l-16-48h192c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm-16 352H64V64h448v288z" />
+    </svg>
+  );
+}
+
+export function IconCursorLarge({
+  className,
+  ...props
+}: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      fill="none"
+      viewBox="0 0 24 24"
+      className={cn("h-4 w-4", className)}
+      xmlns="http://www.w3.org/2000/svg"
+      id="fi_8373711"
+      {...props}
+    >
+      <linearGradient
+        id="paint0_linear_607_9952"
+        gradientUnits="userSpaceOnUse"
+        x1="12.5"
+        x2="12.5"
+        y1="3"
+        y2="22"
+      >
+        <stop offset="0" stopColor="#0d84f1"></stop>
+        <stop offset="1" stopColor="#875be3"></stop>
+      </linearGradient>
+      <path
+        clipRule="evenodd"
+        d="m4.38078 3.07532c-.37329-.15371-.8024-.06789-1.08786.21757s-.37128.71457-.21757 1.08786l7.00005 16.99995c.1533.3723.5149.6164.9175.6193.4026.0028.7677-.236.9263-.6061l2.6848-6.2647c.1012-.236.2893-.424.5253-.5252l6.2646-2.6849c.3701-.1586.609-.5236.6061-.9262-.0029-.4027-.2469-.7643-.6192-.9176z"
+        fill="url(#paint0_linear_607_9952)"
+        fillRule="evenodd"
+      ></path>
+    </svg>
+  );
+}
+
+export function IconClose({
+  className,
+  ...props
+}: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 256 256"
+      fill="currentColor"
+      className={cn("h-4 w-4", className)}
+      {...props}
+    >
+      <path d="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128 50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z" />
+    </svg>
+  );
+}
+
+export function IconFigma({
+  className,
+  ...props
+}: React.ComponentProps<"svg">) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+      className={cn("h-4 w-4", className)}
+      viewBox="0 0 384 512"
+      {...props}
+    >
+      <path d="M14 95.8C14 42.9 56.9 0 109.8 0H274.2C327.1 0 370 42.9 370 95.8C370 129.3 352.8 158.8 326.7 175.9C352.8 193 370 222.5 370 256C370 308.9 327.1 351.8 274.2 351.8H272.1C247.3 351.8 224.7 342.4 207.7 326.9V415.2C207.7 468.8 163.7 512 110.3 512C57.5 512 14 469.2 14 416.2C14 382.7 31.2 353.2 57.2 336.1C31.2 319 14 289.5 14 256C14 222.5 31.2 193 57.2 175.9C31.2 158.8 14 129.3 14 95.8zM176.3 191.6H109.8C74.2 191.6 45.4 220.4 45.4 256C45.4 291.4 74 320.2 109.4 320.4C109.5 320.4 109.7 320.4 109.8 320.4H176.3V191.6zM207.7 256C207.7 291.6 236.5 320.4 272.1 320.4H274.2C309.7 320.4 338.6 291.6 338.6 256C338.6 220.4 309.7 191.6 274.2 191.6H272.1C236.5 191.6 207.7 220.4 207.7 256zM109.8 351.8C109.7 351.8 109.5 351.8 109.4 351.8C74 352 45.4 380.8 45.4 416.2C45.4 451.7 74.6 480.6 110.3 480.6C146.6 480.6 176.3 451.2 176.3 415.2V351.8H109.8zM109.8 31.4C74.2 31.4 45.4 60.2 45.4 95.8C45.4 131.4 74.2 160.2 109.8 160.2H176.3V31.4H109.8zM207.7 160.2H274.2C309.7 160.2 338.6 131.4 338.6 95.8C338.6 60.2 309.7 31.4 274.2 31.4H207.7V160.2z" />
+    </svg>
   );
 }

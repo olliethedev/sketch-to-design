@@ -9,14 +9,14 @@ interface ApiKeyInputProps {
 }
 
 export const ApiKeyInput = ({ onApiKeyChange }: ApiKeyInputProps) => {
-  const [text, setText] = useSyncedState<string>("text", "");
+  const [text, setText] = useSyncedState<string>("temp_api_key_text", "");
 
   const saveApiKey = (apiKey: string) => {
     //todo: validate key
     onApiKeyChange(apiKey);
   };
   return (
-    <AutoLayout width="fill-parent" direction="horizontal" verticalAlignItems="center" spacing={10}>
+    <AutoLayout width="fill-parent" direction="vertical" verticalAlignItems="center" spacing={10}>
       <Input
         fill="#000"
         fontSize={12}
